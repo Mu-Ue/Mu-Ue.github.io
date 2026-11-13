@@ -40,10 +40,23 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-  /* ---------- Scroll hint: hide once the visitor starts scrolling ---------- */
+  /* ---------- Scroll effects: hint, progress line, hero depth ---------- */
   const hint = document.querySelector('.scroll-hint');
-  const onScroll = () => hint.classList.toggle('gone', scrollY > 60);
-  addEventListener('scroll', onScroll, { passive: true });
+  const bar = document.querySelector('.bar');
+  const heroLayers = document.querySelectorAll('.layer');
+  let ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    const y = scrollY;
+    hint.classList.toggle('gone', y > 60);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.setProperty('--p', max > 0 ? Math.min(y / max, 1) : 0);
+    if (!reduced && y < innerHeight * 1.2) {
+      // screenshots drift apart while the hero scrolls away
+      heroLayers.forEach((l) => l.style.setProperty('--sy', `${-y * l.dataset.depth / 120}px`));
+    }
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
 
   /* ---------- 3D tilt + cursor light on project shots ---------- */
