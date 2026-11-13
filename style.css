@@ -34,8 +34,7 @@ a { color: inherit; text-decoration: none; }
 ::selection { background: rgba(124, 140, 255, 0.35); }
 
 /* ---------- Background ---------- */
-/* taller than the screen: the scroll parallax lifts it by up to 25vh (capped in script.js) */
-.aurora { position: fixed; top: 0; left: 0; right: 0; bottom: -30vh; z-index: -2; overflow: hidden; pointer-events: none; }
+.aurora { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
 .aurora i {
   position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%;
   filter: blur(90px); opacity: 0.32; will-change: transform;
@@ -248,10 +247,10 @@ html[data-lang="en"] .opt[data-l="en"] { background: var(--text); color: #0a0b12
 .footer a:hover { color: var(--text); }
 
 /* ---------- Scroll parallax (values are set by script.js from the scroll position) ---------- */
-.shot, .info, .hero-text, .aurora { transform: translate3d(0, var(--shift, 0px), 0); will-change: transform; }
+.shot, .info, .hero-text { transform: translate3d(0, var(--shift, 0px), 0); }
 .view { overflow: hidden; border-radius: 10px; }
 /* the window is 8% shorter than the picture (set in script.js), so the picture can slide vertically without cropping its sides */
-.view img { transform: translate3d(0, calc(-4% + var(--inner, 0%)), 0); will-change: transform; }
+.view img { transform: translate3d(0, calc(-4% + var(--inner, 0%)), 0); }
 .frame.stage .view { overflow: visible; }
 .frame.stage .view img { transform: translate3d(0, calc(var(--inner, 0%) * 2), 0); }
 

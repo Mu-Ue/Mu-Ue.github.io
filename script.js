@@ -31,7 +31,6 @@
   /* ---------- Scroll effects: everything is a pure function of the scroll position ---------- */
   const hint = document.querySelector('.scroll-hint');
   const bar = document.querySelector('.bar');
-  const aurora = document.querySelector('.aurora');
   const heroText = document.querySelector('.hero-text');
   const heroLayers = document.querySelectorAll('.layer');
   const heads = document.querySelectorAll('.section-head');
@@ -62,7 +61,6 @@
 
     hint.classList.toggle('gone', y > 60);
     bar.style.setProperty('--p', max > 0 ? Math.min(y / max, 1) : 0);
-    ease(aurora, '--shift', -Math.min(y * 0.05, vh * 0.25), 'px');
     // hero text lags behind the scroll, screenshots rush ahead; side by side only, stacked they would collide
     const hy = wide ? Math.min(y, vh * 1.3) : 0;
     ease(heroText, '--shift', hy * 0.25, 'px');
