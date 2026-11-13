@@ -1,7 +1,6 @@
 (() => {
   const root = document.documentElement;
   root.classList.add('js');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* ---------- Language (DE default, remembered per visitor) ---------- */
@@ -51,7 +50,7 @@
     hint.classList.toggle('gone', y > 60);
     const max = document.documentElement.scrollHeight - innerHeight;
     bar.style.setProperty('--p', max > 0 ? Math.min(y / max, 1) : 0);
-    if (!reduced && y < innerHeight * 1.2) {
+    if (y < innerHeight * 1.2) {
       // screenshots drift apart while the hero scrolls away
       heroLayers.forEach((l) => l.style.setProperty('--sy', `${-y * l.dataset.depth / 120}px`));
     }
@@ -60,7 +59,7 @@
   onScroll();
 
   /* ---------- 3D tilt + cursor light on project shots ---------- */
-  if (finePointer && !reduced) {
+  if (finePointer) {
     document.querySelectorAll('.shot').forEach((shot) => {
       const frame = shot.querySelector('.frame');
       shot.addEventListener('pointermove', (e) => {
@@ -112,7 +111,7 @@
     requestAnimationFrame(draw);
   };
   addEventListener('resize', resize);
-  if (finePointer && !reduced) {
+  if (finePointer) {
     addEventListener('pointermove', (e) => {
       mx = e.clientX; my = e.clientY; dirty = true;
       // hero parallax: each screenshot moves by its own depth

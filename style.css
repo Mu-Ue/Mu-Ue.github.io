@@ -301,13 +301,6 @@ html[data-lang="en"] .opt[data-l="en"] { background: var(--text); color: #0a0b12
   .footer { padding: 32px 16px 48px; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  html { scroll-behavior: auto; }
-  .js .reveal, .js .project .shot, .js .project .info > *, .js .project .points li, .js .project .frame img { opacity: 1; transform: none; }
-  .section h2::after { transform: none; }
-}
-
 @media print {
   .aurora, #dots, .bar, .scroll-hint, .hero-stack { display: none; }
   body { background: #fff; color: #000; }
