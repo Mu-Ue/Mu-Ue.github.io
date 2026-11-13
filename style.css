@@ -119,8 +119,6 @@ html[data-lang="en"] .opt[data-l="en"] { background: var(--text); color: #0a0b12
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .role { margin: 22px 0 0; font: 500 clamp(1rem, 2vw, 1.2rem)/1.4 var(--mono); color: var(--text); }
-.role .sep { color: var(--indigo); margin: 0 6px; }
-.nowrap { white-space: nowrap; }
 .tagline { margin: 16px 0 0; max-width: 520px; color: var(--muted); font-size: 1.08rem; }
 .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .stats { list-style: none; padding: 0; margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
