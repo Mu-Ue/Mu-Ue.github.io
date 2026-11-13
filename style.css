@@ -167,7 +167,6 @@ html[data-lang="en"] .opt[data-l="en"] { background: var(--text); color: #0a0b12
 .section-head { margin-bottom: 64px; }
 .kicker { margin: 0 0 8px; font: 500 13px/1 var(--mono); color: var(--indigo); }
 .section h2 { margin: 0; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; }
-.section-sub { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: 1.05rem; }
 
 /* ---------- Projects ---------- */
 .project {
@@ -279,7 +278,7 @@ html[data-lang="en"] .opt[data-l="en"] { background: var(--text); color: #0a0b12
   .aurora, #dots, .bar, .scroll-hint, .hero-stack { display: none; }
   body { background: #fff; color: #000; }
   .name { color: #000; background: none; }
-  .lead, .points li, .tagline, .section-sub { color: #222; }
+  .lead, .points li, .tagline { color: #222; }
   .js .reveal { opacity: 1; transform: none; }
   .project { break-inside: avoid; }
 }
