@@ -1,6 +1,5 @@
 (() => {
   const root = document.documentElement;
-  root.classList.add('js');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* ---------- Language (DE default, remembered per visitor) ---------- */
@@ -29,33 +28,49 @@
   setInterval(tick, 1000);
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- Reveal on scroll ---------- */
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      e.target.classList.add('in');
-      io.unobserve(e.target);
-    }
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-
-  /* ---------- Scroll effects: hint, progress line, hero depth ---------- */
+  /* ---------- Scroll effects: everything is a pure function of the scroll position ---------- */
   const hint = document.querySelector('.scroll-hint');
   const bar = document.querySelector('.bar');
+  const aurora = document.querySelector('.aurora');
+  const heroText = document.querySelector('.hero-text');
   const heroLayers = document.querySelectorAll('.layer');
-  let ticking = false;
+  const heads = document.querySelectorAll('.section-head');
+  const projects = [...document.querySelectorAll('.project')].map((p) => ({
+    p, shot: p.querySelector('.shot'), info: p.querySelector('.info'), img: p.querySelector('.view img'),
+  }));
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  projects.forEach(({ img }) => {
+    if (!img.closest('.stage')) img.parentElement.style.aspectRatio = `${img.getAttribute('width')} / ${img.getAttribute('height') * 0.92}`;
+  });
   const onScroll = () => {
-    ticking = false;
-    const y = scrollY;
+    const y = scrollY, vh = innerHeight;
+    const wide = innerWidth > 960;  // stacked layout on small screens: no opposing shifts, they would overlap
+    // read all positions first, then write, so the browser lays out only once per frame
+    const pr = projects.map(({ p }) => { const r = p.getBoundingClientRect(); return clamp((r.top + r.height / 2 - vh / 2) / vh, -1, 1); });
+    const hr = [...heads].map((h) => h.getBoundingClientRect().top);
+    const max = document.documentElement.scrollHeight - vh;
+
     hint.classList.toggle('gone', y > 60);
-    const max = document.documentElement.scrollHeight - innerHeight;
     bar.style.setProperty('--p', max > 0 ? Math.min(y / max, 1) : 0);
-    if (y < innerHeight * 1.2) {
-      // screenshots drift apart while the hero scrolls away
-      heroLayers.forEach((l) => l.style.setProperty('--sy', `${-y * l.dataset.depth / 120}px`));
+    aurora.style.setProperty('--shift', `${-y * 0.05}px`);
+    if (y < vh * 1.3) {
+      // hero text lags behind the scroll, screenshots rush ahead; side by side only, stacked they would collide
+      const hy = wide ? y : 0;
+      heroText.style.setProperty('--shift', `${hy * 0.2}px`);
+      heroLayers.forEach((l) => l.style.setProperty('--sy', `${-hy * l.dataset.depth / 90}px`));
     }
+    projects.forEach(({ shot, info, img }, i) => {
+      const t = pr[i];  // -1 above centre … 0 centred … 1 below
+      shot.style.setProperty('--shift', wide ? `${t * 70}px` : '0px');
+      info.style.setProperty('--shift', wide ? `${t * -35}px` : '0px');
+      img.style.setProperty('--inner', `${t * -4}%`);  // the picture moves inside its window
+    });
+    heads.forEach((h, i) => h.style.setProperty('--u', clamp((vh - hr[i]) / (vh * 0.6), 0, 1)));
   };
-  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  // browsers already fire scroll at most once per frame, so no extra frame scheduling (which could stall)
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  addEventListener('load', onScroll);
   onScroll();
 
   /* ---------- 3D tilt + cursor light on project shots ---------- */
