@@ -42,7 +42,17 @@
   projects.forEach(({ img }) => {
     if (!img.closest('.stage')) img.parentElement.style.aspectRatio = `${img.getAttribute('width')} / ${img.getAttribute('height') * 0.92}`;
   });
-  const onScroll = () => {
+  // Each value glides toward its scroll-derived target instead of jumping to it. A mouse wheel scrolls in
+  // ~100px steps; without easing everything would jump rigidly with the page and the parallax would be invisible.
+  const state = new Map();
+  const ease = (el, prop, target, unit) => {
+    let s = state.get(el);
+    if (!s) state.set(el, (s = {}));
+    const c = s[prop] ?? target;
+    const n = Math.abs(target - c) < 0.02 ? target : c + (target - c) * 0.09;
+    if (n !== s[prop]) { s[prop] = n; el.style.setProperty(prop, n + unit); }
+  };
+  const update = () => {
     const y = scrollY, vh = innerHeight;
     const wide = innerWidth > 960;  // stacked layout on small screens: no opposing shifts, they would overlap
     // read all positions first, then write, so the browser lays out only once per frame
@@ -52,26 +62,23 @@
 
     hint.classList.toggle('gone', y > 60);
     bar.style.setProperty('--p', max > 0 ? Math.min(y / max, 1) : 0);
-    aurora.style.setProperty('--shift', `${-y * 0.05}px`);
-    if (y < vh * 1.3) {
-      // hero text lags behind the scroll, screenshots rush ahead; side by side only, stacked they would collide
-      const hy = wide ? y : 0;
-      heroText.style.setProperty('--shift', `${hy * 0.2}px`);
-      heroLayers.forEach((l) => l.style.setProperty('--sy', `${-hy * l.dataset.depth / 90}px`));
-    }
+    ease(aurora, '--shift', -Math.min(y * 0.05, vh * 0.25), 'px');
+    // hero text lags behind the scroll, screenshots rush ahead; side by side only, stacked they would collide
+    const hy = wide ? Math.min(y, vh * 1.3) : 0;
+    ease(heroText, '--shift', hy * 0.25, 'px');
+    heroLayers.forEach((l) => ease(l, '--sy', -hy * l.dataset.depth / 80, 'px'));
     projects.forEach(({ shot, info, img }, i) => {
       const t = pr[i];  // -1 above centre … 0 centred … 1 below
-      shot.style.setProperty('--shift', wide ? `${t * 70}px` : '0px');
-      info.style.setProperty('--shift', wide ? `${t * -35}px` : '0px');
-      img.style.setProperty('--inner', `${t * -4}%`);  // the picture moves inside its window
+      ease(shot, '--shift', wide ? t * 110 : 0, 'px');
+      ease(info, '--shift', wide ? t * -45 : 0, 'px');
+      ease(img, '--inner', t * -4, '%');  // the picture moves inside its window
     });
-    heads.forEach((h, i) => h.style.setProperty('--u', clamp((vh - hr[i]) / (vh * 0.6), 0, 1)));
+    heads.forEach((h, i) => ease(h, '--u', clamp((vh - hr[i]) / (vh * 0.6), 0, 1), ''));
   };
-  // browsers already fire scroll at most once per frame, so no extra frame scheduling (which could stall)
-  addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', onScroll);
-  addEventListener('load', onScroll);
-  onScroll();
+  // a continuous frame loop: it keeps easing between scroll events and resumes by itself after a background tab
+  const loop = () => { update(); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  update();
 
   /* ---------- 3D tilt + cursor light on project shots ---------- */
   if (finePointer) {

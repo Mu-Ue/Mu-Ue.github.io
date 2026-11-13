@@ -34,7 +34,8 @@ a { color: inherit; text-decoration: none; }
 ::selection { background: rgba(124, 140, 255, 0.35); }
 
 /* ---------- Background ---------- */
-.aurora { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+/* taller than the screen: the scroll parallax lifts it by up to 25vh (capped in script.js) */
+.aurora { position: fixed; top: 0; left: 0; right: 0; bottom: -30vh; z-index: -2; overflow: hidden; pointer-events: none; }
 .aurora i {
   position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%;
   filter: blur(90px); opacity: 0.32; will-change: transform;
