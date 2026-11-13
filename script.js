@@ -30,27 +30,21 @@
   setInterval(tick, 1000);
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- Reveal on scroll + stat count-up ---------- */
-  const countUp = (el) => {
-    const end = +el.dataset.count;
-    if (reduced) return;
-    const t0 = performance.now();
-    const step = (t) => {
-      const p = Math.min((t - t0) / 900, 1);
-      el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
+  /* ---------- Reveal on scroll ---------- */
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue;
       e.target.classList.add('in');
-      e.target.querySelectorAll('[data-count]').forEach(countUp);
       io.unobserve(e.target);
     }
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  /* ---------- Scroll hint: hide once the visitor starts scrolling ---------- */
+  const hint = document.querySelector('.scroll-hint');
+  const onScroll = () => hint.classList.toggle('gone', scrollY > 60);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
   /* ---------- 3D tilt + cursor light on project shots ---------- */
   if (finePointer && !reduced) {
